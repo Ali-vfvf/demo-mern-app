@@ -8,7 +8,7 @@ function App(){
 
   const addNumbers = async () => {
 
-    const res = await fetch(`http://localhost:5000/add?a=${a}&b=${b}`);
+    const res = await fetch(`http://backend:5000/add?a=${a}&b=${b}`);
 
     const data = await res.json();
 
