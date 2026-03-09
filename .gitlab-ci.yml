@@ -1,0 +1,19 @@
+stages:
+  - test
+  - build
+
+test_backend:
+  stage: test
+  image: node:18
+  script:
+    - cd backend
+    - npm install
+    - npm test
+
+build_image:
+  stage: build
+  image: docker:latest
+  services:
+    - docker:dind
+  script:
+    - docker build -t mern-demo-app .
