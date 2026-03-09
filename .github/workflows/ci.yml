@@ -57,20 +57,20 @@ jobs:
 
       - name: Test API
         run: curl "http://localhost:5000/add?a=2&b=3"
-  
+
+      - name: Stop containers
+        run: docker compose down
+
+
   deploy:
     runs-on: self-hosted
     needs: integration-tests
 
     steps:
-      - name: Deploy to server
-        uses: appleboy/ssh-action@v1.0.0
-        with:
-          host: ${{ secrets.SERVER_IP }}
-          username: ${{ secrets.SERVER_USER }}
-          key: ${{ secrets.SERVER_SSH_KEY }}
-          script: |
-            cd demo-mern-app
-            git pull origin main
-            docker compose down
-            docker compose up -d --build
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Deploy containers
+        run: |
+          docker compose down
+          docker compose up -d --build
