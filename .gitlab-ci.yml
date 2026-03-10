@@ -23,6 +23,7 @@ build:
     - docker compose build
 
 deploy:
+  image: docker:24
   stage: deploy
   script:
     - docker compose down
