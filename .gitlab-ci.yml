@@ -1,0 +1,9 @@
+stages:
+  - unit-tests
+
+unit-tests:
+  stage: unit-tests
+  script:
+    - cd backend
+    - npm install
+    - node test.js
