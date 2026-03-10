@@ -2,6 +2,7 @@ image: node:22
 
 stages:
   - unit-tests
+  - build
 
 unit-tests:
   stage: unit-tests
@@ -9,3 +10,8 @@ unit-tests:
     - cd backend
     - npm install
     - node test.js
+
+build:
+  stage: build
+  script:
+    - docker compose build
