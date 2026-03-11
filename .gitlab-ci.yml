@@ -25,6 +25,8 @@ build:
 deploy:
   image: docker:24
   stage: deploy
+  variables:
+    DOCKER_HOST: ""
   script:
     - docker compose down
     - docker compose up -d --build
