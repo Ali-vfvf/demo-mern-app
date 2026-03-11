@@ -4,7 +4,7 @@ services:
     build: ./backend
     container_name: mern-backend
     ports:
-      - "5000:5000"
+      - "5000:3000"
 
   frontend:
     build: ./frontend
