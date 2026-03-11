@@ -62,6 +62,8 @@ jobs:
         run: docker compose down
 
 
+
+
   deploy:
     runs-on: self-hosted
     needs: integration-tests
