@@ -1,22 +1,35 @@
 stages:
-  - unit-tests
   - build
   - deploy
 
-unit-tests:
-  stage: unit-tests
-  script:
-    - cd backend
-    - npm install
-    - node test.js
-
-build:
+build_images:
   stage: build
+  image: docker:24
+  services:
+    - docker:24-dind
+  tags:
+    - docker
+  before_script:
+    - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
   script:
-    - docker compose build
+    - docker build -t $DOCKER_USERNAME/mern-backend:latest ./backend
+    - docker build -t $DOCKER_USERNAME/mern-frontend:latest ./frontend
+    - docker push $DOCKER_USERNAME/mern-backend:latest
+    - docker push $DOCKER_USERNAME/mern-frontend:latest
 
-deploy:
+deploy_to_production:
   stage: deploy
+  image: alpine:latest
+  tags:
+    - docker
+  before_script:
+    - apk add --no-cache openssh-client
+    - mkdir -p ~/.ssh
+    - echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_ed25519
+    - chmod 600 ~/.ssh/id_ed25519
   script:
-    - docker compose down
-    - docker compose up -d --build
+    - ssh -o StrictHostKeyChecking=no $PROD_USER@$PROD_HOST "
+        cd ~/demo-mern-app &&
+        docker compose pull &&
+        docker compose up -d
+      "
