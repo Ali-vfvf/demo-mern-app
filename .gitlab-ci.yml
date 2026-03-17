@@ -6,7 +6,7 @@ build_images:
   stage: build
   image: docker:24
   services:
-    - docker:24-dind
+    - name: docker:24-dind
       privileged: true
   tags:
     - docker
