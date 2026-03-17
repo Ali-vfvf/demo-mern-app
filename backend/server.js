@@ -15,6 +15,7 @@ app.get("/api/add", (req, res) => {
 });
 
 // MULTIPLY
+// Mult
 app.get("/api/multiply", (req, res) => {
   const a = Number(req.query.a);
   const b = Number(req.query.b);
