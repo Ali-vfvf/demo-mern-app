@@ -8,7 +8,7 @@ function App(){
 
   const addNumbers = async () => {
 
-    const res = await fetch(`http://172.28.5.11:5000/add?a=${a}&b=${b}`);
+    const res = await fetch(`/api/add?a=${a}&b=${b}`);
 
     const data = await res.json();
 

@@ -8,7 +8,9 @@
     "serve": "^14.2.6"
   },
   "scripts": {
-    "start": "npx serve ."
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "serve": "npx serve -s build"
   },
   "description": "",
   "main": "index.js",
