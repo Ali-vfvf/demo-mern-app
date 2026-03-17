@@ -8,7 +8,6 @@ build_images:
   services:
     - name: docker:24-dind
       # Do NOT put privileged here
-  privileged: true
   tags:
     - docker
   before_script:
