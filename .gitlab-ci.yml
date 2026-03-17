@@ -19,7 +19,7 @@ build_images:
 
 deploy_to_production:
   stage: deploy
-  image: alpine:latest
+  image: docker:24
   tags:
     - docker
   before_script:
