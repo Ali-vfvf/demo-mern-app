@@ -16,6 +16,7 @@ build_images:
     - docker build -t $DOCKER_USERNAME/mern-frontend:latest ./frontend
     - docker push $DOCKER_USERNAME/mern-backend:latest
     - docker push $DOCKER_USERNAME/mern-frontend:latest
+  privileged: true
 
 deploy_to_production:
   stage: deploy
