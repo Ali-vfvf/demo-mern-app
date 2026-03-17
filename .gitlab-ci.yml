@@ -6,7 +6,8 @@ build_images:
   stage: build
   image: docker:24
   services:
-    - docker:24-dind
+    - docker:24-
+      privileged: true
   tags:
     - docker
   before_script:
@@ -16,7 +17,7 @@ build_images:
     - docker build -t $DOCKER_USERNAME/mern-frontend:latest ./frontend
     - docker push $DOCKER_USERNAME/mern-backend:latest
     - docker push $DOCKER_USERNAME/mern-frontend:latest
-  privileged: true
+  
 
 deploy_to_production:
   stage: deploy
