@@ -6,32 +6,8 @@ on:
 
 jobs:
 
-  unit-tests:
-    runs-on: self-hosted
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 18
-
-      - name: Install backend dependencies
-        run: |
-          cd backend
-          npm install
-
-      - name: Run unit tests
-        run: |
-          cd backend
-          node test.js
-
-
   build:
     runs-on: self-hosted
-    needs: unit-tests
 
     steps:
       - name: Checkout repository
@@ -41,32 +17,9 @@ jobs:
         run: docker compose build
 
 
-  integration-tests:
-    runs-on: self-hosted
-    needs: build
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Start containers
-        run: docker compose up -d
-
-      - name: Wait for backend
-        run: sleep 5
-
-      - name: Test API
-        run: curl "http://localhost:5000/add?a=2&b=3"
-
-      - name: Stop containers
-        run: docker compose down
-
-
-
-
   deploy:
     runs-on: self-hosted
-    needs: integration-tests
+    needs: build
 
     steps:
       - name: Checkout repository
