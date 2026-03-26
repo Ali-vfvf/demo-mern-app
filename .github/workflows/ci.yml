@@ -4,9 +4,9 @@ on:
   push:
     branches: [ main ]
 
-  jobs:
+jobs:
 
-    build-and-push:
+  build-and-push:
     runs-on: self-hosted
 
     steps:
@@ -40,44 +40,36 @@ on:
       - name: Checkout repo
         uses: actions/checkout@v4
 
-      # ---------------- COPY DOCKER COMPOSE ----------------
+      # COPY docker-compose
       - name: Copy docker-compose to server
         run: |
-          scp -o StrictHostKeyChecking=no \
+          scp -i "${{ secrets.PROD_SSH_KEY }}" -o StrictHostKeyChecking=no \
           docker-compose.yml \
-          ubuntu@${{ secrets.PROD_HOST }}:/home/ubuntu/docker-compose.yml \
-          -i ${{ secrets.PROD_SSH_KEY }}
+          ubuntu@${{ secrets.PROD_HOST }}:/home/ubuntu/docker-compose.yml
 
-      # ---------------- COPY NGINX CONFIG ----------------
+      # COPY nginx config
       - name: Copy nginx config to server
         run: |
-          ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.PROD_HOST }} \
-          "mkdir -p /home/ubuntu/nginx"
+          ssh -i "${{ secrets.PROD_SSH_KEY }}" -o StrictHostKeyChecking=no \
+          ubuntu@${{ secrets.PROD_HOST }} "mkdir -p /home/ubuntu/nginx"
 
-          scp -o StrictHostKeyChecking=no \
+          scp -i "${{ secrets.PROD_SSH_KEY }}" -o StrictHostKeyChecking=no \
           nginx/nginx.conf \
-          ubuntu@${{ secrets.PROD_HOST }}:/home/ubuntu/nginx/nginx.conf \
-          -i ${{ secrets.PROD_SSH_KEY }}
+          ubuntu@${{ secrets.PROD_HOST }}:/home/ubuntu/nginx/nginx.conf
 
-      # ---------------- DEPLOY ----------------
+      # DEPLOY
       - name: Deploy via SSH
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ secrets.PROD_HOST }}
-          username: ubuntu
-          key: ${{ secrets.PROD_SSH_KEY }}
-          script: |
+        run: |
+          ssh -i "${{ secrets.PROD_SSH_KEY }}" -o StrictHostKeyChecking=no \
+          ubuntu@${{ secrets.PROD_HOST }} << 'EOF'
 
             cd /home/ubuntu
 
-            echo "Stopping old containers..."
             docker compose down || true
 
-            echo "Pulling latest images..."
             docker pull alivfvf/mern-frontend:latest
             docker pull alivfvf/mern-backend:latest
 
-            echo "Starting new stack..."
             docker compose up -d --remove-orphans
 
-            echo "Deployment complete 🚀"
+          EOF
