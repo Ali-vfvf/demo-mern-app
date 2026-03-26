@@ -43,24 +43,24 @@ jobs:
       # COPY docker-compose
       - name: Copy docker-compose to server
         run: |
-          scp -i "${{ secrets.PROD_SSH_KEY }}" -o StrictHostKeyChecking=no \
+          scp -i key.pem -o StrictHostKeyChecking=no \
           docker-compose.yml \
           ubuntu@${{ secrets.PROD_HOST }}:/home/ubuntu/docker-compose.yml
 
       # COPY nginx config
       - name: Copy nginx config to server
         run: |
-          ssh -i "${{ secrets.PROD_SSH_KEY }}" -o StrictHostKeyChecking=no \
+          ssh -i key.pem -o StrictHostKeyChecking=no \
           ubuntu@${{ secrets.PROD_HOST }} "mkdir -p /home/ubuntu/nginx"
 
-          scp -i "${{ secrets.PROD_SSH_KEY }}" -o StrictHostKeyChecking=no \
+          scp -i key.pem -o StrictHostKeyChecking=no \
           nginx/nginx.conf \
           ubuntu@${{ secrets.PROD_HOST }}:/home/ubuntu/nginx/nginx.conf
 
       # DEPLOY
       - name: Deploy via SSH
         run: |
-          ssh -i "${{ secrets.PROD_SSH_KEY }}" -o StrictHostKeyChecking=no \
+          ssh -i key.pem -o StrictHostKeyChecking=no \
           ubuntu@${{ secrets.PROD_HOST }} << 'EOF'
 
             cd /home/ubuntu
