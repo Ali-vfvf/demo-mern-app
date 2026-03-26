@@ -27,6 +27,6 @@ services:
       - frontend
       - backend
   
-  networks:
-    default:
-      name: mern-network
+networks:
+  default:
+    name: mern-network
