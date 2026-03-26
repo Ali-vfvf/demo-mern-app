@@ -40,36 +40,47 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
 
-      # COPY docker-compose
+      # ---------------- SETUP SSH KEY (FIXED) ----------------
+      - name: Setup SSH key
+        run: |
+          echo "${{ secrets.PROD_SSH_KEY }}" > $HOME/key.pem
+          chmod 600 $HOME/key.pem
+
+      # ---------------- COPY DOCKER COMPOSE ----------------
       - name: Copy docker-compose to server
         run: |
-          scp -i key.pem -o StrictHostKeyChecking=no \
+          scp -i $HOME/key.pem -o StrictHostKeyChecking=no \
           docker-compose.yml \
           ubuntu@${{ secrets.PROD_HOST }}:/home/ubuntu/docker-compose.yml
 
-      # COPY nginx config
+      # ---------------- COPY NGINX CONFIG ----------------
       - name: Copy nginx config to server
         run: |
-          ssh -i key.pem -o StrictHostKeyChecking=no \
+          ssh -i $HOME/key.pem -o StrictHostKeyChecking=no \
           ubuntu@${{ secrets.PROD_HOST }} "mkdir -p /home/ubuntu/nginx"
 
-          scp -i key.pem -o StrictHostKeyChecking=no \
+          scp -i $HOME/key.pem -o StrictHostKeyChecking=no \
           nginx/nginx.conf \
           ubuntu@${{ secrets.PROD_HOST }}:/home/ubuntu/nginx/nginx.conf
 
-      # DEPLOY
+      # ---------------- DEPLOY ----------------
       - name: Deploy via SSH
         run: |
-          ssh -i key.pem -o StrictHostKeyChecking=no \
+          ssh -i $HOME/key.pem -o StrictHostKeyChecking=no \
           ubuntu@${{ secrets.PROD_HOST }} << 'EOF'
 
             cd /home/ubuntu
 
+            echo "Stopping old containers..."
             docker compose down || true
 
+            echo "Pulling latest images..."
             docker pull alivfvf/mern-frontend:latest
             docker pull alivfvf/mern-backend:latest
 
+            echo "Starting new stack..."
             docker compose up -d --remove-orphans
+
+            echo "Deployment complete 🚀"
 
           EOF
